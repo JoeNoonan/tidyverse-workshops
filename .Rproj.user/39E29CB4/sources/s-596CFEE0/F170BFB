@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573059471180.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F170BFB",
+    "lastKnownWriteTime" : 1573298183,
+    "last_content_update" : 1573298183598,
+    "path" : "C:/IDEA/WORKSHOPS/BASICS/TIDYVERSE.R",
+    "project_path" : "TIDYVERSE.R",
+    "properties" : {
+        "cursorPosition" : "259,16",
+        "scrollLine" : "253",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

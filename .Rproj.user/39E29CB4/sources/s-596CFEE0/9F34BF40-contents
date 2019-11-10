@@ -1,0 +1,74 @@
+library(tidyverse)
+library(WDI)
+library(countrycode)
+library(scales)
+library(extrafont)
+
+#### Analysis goal: Find the total number of refugees per continent over time aswell as the percentage of refugees (releative to population) 
+####per continent over time
+
+# Use worldbank package to pull data from the wb API
+wb_data <-  WDI(country = "all", indicator = c("SP.POP.TOTL","SM.POP.REFG"), 
+         start = 1990, end = 2016, extra = FALSE, cache = NULL)
+
+# Use countrycode package to add country codes (needed to merge data) and to add regional and continent flags
+wb_data_filtered <- wb_data %>% 
+  mutate(ID_country_code = countrycode(iso2c, "iso2c", "cown"), # add country code
+         region = countrycode(iso2c, "iso2c", "region"), #add regions
+         continent = countrycode(iso2c, "iso2c", "continent"))  %>%  # add continent 
+filter(!is.na(ID_country_code)) # filter out non-countries
+  
+####  Get percentage of refugees by continent 
+percent_refg_cont  <-wb_data_filtered %>% 
+  group_by(continent, year) %>% # group by continent and year 
+  summarise(pop_refg = sum(SM.POP.REFG, na.rm = TRUE), #get population of refugees by continent and year
+            pop_totl = sum(SP.POP.TOTL, na.rm = TRUE), #get total population of by continent and year
+            percent_refg = pop_refg/pop_totl) #get % refugee by continent. 
+
+### Make charts 
+
+### IDEA THEME
+
+IDEA_colors <- c("#111344", "#B50043", "#09BA00", "#598D99","#723100", "#FF690A", "#FFD433")
+
+IDEA_theme_1 <- function(){theme(text = element_text(size=28, family = "Garamond"), 
+                                 legend.position="bottom", 
+                                 plot.title = element_text(face="bold"),
+                                 axis.title.x=element_blank(),  
+                                 legend.title=element_blank(), 
+                                 axis.text.x = element_text(angle = 90, hjust = 1), 
+                                 axis.text.y = element_text(),
+                                 panel.background = element_rect(fill = "grey85"),
+                                 plot.caption=element_text(size=10, hjust=1),
+                                 panel.grid.major = element_line(size = 1))}
+
+### percent of refugees plot - code below is to make the chart -- too detailed to explain. 
+
+percent_refg_plot <- ggplot(percent_refg_cont) +
+  geom_line(aes(x=year, y=percent_refg, group = continent, color = continent), size = 2)+ 
+  scale_x_continuous("Year", breaks=pretty_breaks(n=14),limits=c(1990, 2016))+ 
+  scale_y_continuous("% Refugees", breaks = scales::pretty_breaks(n = 10),limits=c(0, .01), labels = scales::percent)+
+  IDEA_theme_1()+ 
+  scale_colour_manual(values = IDEA_colors) +
+  ggtitle("Precentage of Refugees by Continent")+
+  guides(colour = guide_legend(nrow = 1, byrow =  TRUE))
+
+### Save % of refugees plot 
+
+ggsave(filename= "percent_refg_plot.png", plot=percent_refg_plot, width = 30, height = 20, units = "cm", scale = 1)
+
+### Total number of refugees plot
+options(scipen=999) ### remove scientific notation 
+
+total_refg_plot <- ggplot(percent_refg_cont) +
+  geom_line(aes(x=year, y=pop_refg, group = continent, color = continent), size = 2)+ 
+  scale_x_continuous("Year", breaks=pretty_breaks(n=14),limits=c(1990, 2016))+ 
+  scale_y_continuous("Number of Refugees", breaks = scales::pretty_breaks(n = 10),limits=c(0, 13000000), labels = comma)+
+  IDEA_theme_1()+ 
+  scale_colour_manual(values = IDEA_colors) +
+  ggtitle("Number of Refugees by Continent")+
+  guides(colour = guide_legend(nrow = 1, byrow =  TRUE))
+
+### Save total # of refugees plot 
+
+ggsave(filename= "total_refg_plot.png", plot=total_refg_plot, width = 30, height = 20, units = "cm", scale = 1)
