@@ -5,7 +5,7 @@ library(janitor)
 ### Read in data
 
 ### Reading Data Locally
-gsodi_long <- read_csv("gsodi_long_ci_rank_regions_adv_dec_regime_v5_2019.csv")
+gsodi_long <- read_csv("gsodi_long.csv")
 
 ### Reading Data from URL 
 gsodi_wide <- read_csv("https://www.idea.int/gsod-indices/sites/default/files/gsodi_pv_3.csv")

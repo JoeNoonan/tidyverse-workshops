@@ -30,6 +30,8 @@ result*10
 
 numbers <- c(1, 2, 3, 4, 5)
 
+joe_daniel <- c("Joe", "Daniel")
+
 # You can also combine objects
 
 combined <- c(result,numbers)
@@ -38,6 +40,22 @@ combined <- c(result,numbers)
 
 seq(from = 0, to = 10, by = 2)
 
+min(numbers)
+
+max(numbers)
+
+mean(numbers)
+
+median(numbers)
+
+
+first <- "Joseph"
+middle <- "Daniel"
+last   <- "Noonan"
+
+full_name <- paste(first, middle, last)
+
+toupper(full_name)
 
 # Custom Functions
 # the function(x){} is how you start to right a function. X is the input.
