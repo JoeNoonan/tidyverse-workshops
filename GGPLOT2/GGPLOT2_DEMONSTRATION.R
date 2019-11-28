@@ -8,10 +8,11 @@ library(ggthemes)
 ### There are hundreds of little details you can learn but this is mostly focusing on the overall process
 
 
+gapminder_df <- gapminder
 
 ### Knows the data, but not the mapping 
 
-ggplot(data = gapminder)
+ggplot(data = gapminder_df)
 
 ### Given data and mapping, but no geom
 
@@ -34,16 +35,6 @@ ggplot(data = gapminder,
   geom_line() # Tells the computer to make a line chart, this doesn't make sense.
 
 
-#### Or layer multiple genoms? 
-
-ggplot(data = gapminder,
-       mapping = aes(x = gdpPercap,
-                     y = lifeExp)) +
-  geom_line() +
-  geom_point()
-
-
-
 ### Adding layer by layer
 ### Changing scale
 
@@ -52,8 +43,8 @@ base_plot
 ggplot(data = gapminder,
        mapping = aes(x = gdpPercap,
                      y = lifeExp)) +
-  geom_point(alpha = 0.3) + #change the alphaa to make the dots more transparent 
-  scale_x_log10(labels = scales::dollar) #Compresses outliers 
+  geom_point(alpha = 0.3) + #change the alpha to make the dots more transparent 
+  scale_x_log10(labels = scales::dollar) #Compresses outliers using a logarithmic scale, add dollar sign
 
 #### Adding labels 
 
@@ -68,10 +59,9 @@ ggplot(data = gapminder,
        caption = "Source: Gapminder.")
 
 
-### But what do these dots represent? Which countries are they? 
+### How to group and color code variables?
 
-
-ggplot(data = gapminder,
+final_plot <- ggplot(data = gapminder,
             mapping = aes(x = gdpPercap,
                           y = lifeExp,
                           color = continent, # Color the outside of the points by contintnent
@@ -83,84 +73,47 @@ ggplot(data = gapminder,
        subtitle = "Data points are country-years",
        caption = "Source: Gapminder.")
 
+### Right now all of the country--years are being shown.
+### If you were only interested in 2018, how would you make a chart only showing 2018? 
+### (Do together)
+
+### How would we make a line chart to show how average life expetancy by continent has changed 
+### from 1980 to 2000?
+
+
+###
+### Excercise 1
+### 
+
+### Reading in GSODI data  from URL 
+gsodi_wide <- read_csv("gsodi_wide_w_region_names.csv") %>% 
+  filter(!is.na(ID_region))# filter out all cases that don't have regional code
+
+### Create a scatterplot for Fundemental Rights (C_A2) and Impartial Administration (C_A4)
+
+### Now create the same scatterplot but just for Africa (ID_region_name)
+### Store this plot as an object
+
+### Now Create the same scatterplot but just for Africa (ID_region_name) in 2018 (ID_year)
+
+
 
 ### Themes! 
 ### Examples of themes below
 ### Black and white theme
 
-ggplot(data = gapminder,
-       mapping = aes(x = gdpPercap,
-                     y = lifeExp,
-                     color = continent, # Color the outside of the points by contintnent
-                     fill = continent))+ # Total fill by color
-  geom_point() +
-  scale_x_log10(labels = scales::dollar) +
-  labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
-       title = "Economic Growth and Life Expectancy",
-       subtitle = "Data points are country-years",
-       caption = "Source: Gapminder.") +
+final_plot +
   theme_bw()
 
 ### Theme minimal 
 
-gapminder_minimal <- ggplot(data = gapminder,
-       mapping = aes(x = gdpPercap,
-                     y = lifeExp,
-                     color = continent, # Color the outside of the points by contintnent
-                     fill = continent))+ # Total fill by color
-  geom_point() +
-  scale_x_log10(labels = scales::dollar) +
-  labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
-       title = "Economic Growth and Life Expectancy",
-       subtitle = "Data points are country-years",
-       caption = "Source: Gapminder.") +
-  theme_minimal()
-
-### Theme light
-ggplot(data = gapminder,
-       mapping = aes(x = gdpPercap,
-                     y = lifeExp,
-                     color = continent, # Color the outside of the points by contintnent
-                     fill = continent))+ # Total fill by color
-  geom_point() +
-  scale_x_log10(labels = scales::dollar) +
-  labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
-       title = "Economic Growth and Life Expectancy",
-       subtitle = "Data points are country-years",
-       caption = "Source: Gapminder.") +
+gapminder_minimal <- final_plot +
   theme_light()
 
 ### Additional themes from ggthemes
 
-### "Economist Theme"
-
-ggplot(data = gapminder,
-       mapping = aes(x = gdpPercap,
-                     y = lifeExp,
-                     color = continent, # Color the outside of the points by contintnent
-                     fill = continent))+ # Total fill by color
-  geom_point() +
-  scale_x_log10(labels = scales::dollar) +
-  labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
-       title = "Economic Growth and Life Expectancy",
-       subtitle = "Data points are country-years",
-       caption = "Source: Gapminder.") +
-  theme_economist()
-
-
-### WSJ Theme
-
-ggplot(data = gapminder,
-       mapping = aes(x = gdpPercap,
-                     y = lifeExp,
-                     color = continent, # Color the outside of the points by contintnent
-                     fill = continent))+ # Total fill by color
-  geom_point() +
-  scale_x_log10(labels = scales::dollar) +
-  labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
-       title = "Economic Growth and Life Expectancy",
-       subtitle = "Data points are country-years",
-       caption = "Source: Gapminder.") +
+### "Five Thirty Eight"" Theme"
+final_plot +
   theme_fivethirtyeight()
 
 ### How to save plots
@@ -185,20 +138,12 @@ ggsave(gapminder_minimal, filename = "figures/gapminder_minimal_large.png",
 ### Checks on Government in Venezuela from 
 ### 1998 to 2018 
 
-### 
-region_sub_region_key <- read_csv("region_sub_region_key.csv")
-country_region_sub_region_key<- read_csv("country_region_sub_region_key.csv") 
-
 ### read GSOD
-gsodi_long_ci <- read_csv("gsodi_rank_ci_long_with_regions_v5_2019.csv") %>%
-  arrange(ID_country_region_sub, ID_country_name) %>% 
-  mutate(ID_country_name_F = factor(.$ID_country_name, levels=(unique(.$ID_country_name))),
-         lower_value_country = ifelse(ID_country_region_sub == 1, lower_value, NA),
-         upper_value_country = ifelse(ID_country_region_sub == 1, upper_value, NA)) %>% 
-  filter(!is.na(ID_variable_name))
+
+gsodi_long_w_regions <- read_csv("gsodi_rank_ci_long_with_regions_v5_2019.csv")
 
 
-venezuela_df <- filter(gsodi_long_ci, ID_country_name == "Venezuela", 
+venezuela_df <- filter(gsodi_long_w_regions, ID_country_name == "Venezuela", 
                        ID_variable_name == "Checks on Government",
                        ID_year %in% seq(1990, 2018, by = 1))
 
@@ -223,7 +168,7 @@ ggplot(data = venezuela_df, aes(x = ID_year, y = value)) +
   theme_minimal() + 
   scale_x_continuous(breaks = c(1990, 1995, 2000, 2005, 2010, 2015, 2018), limits = c(1990, 2018))+ 
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10),limits=c(0, 1))+
-  labs(x = "Year", y = "Checks on Government Score",
+  labs(x = "Year", y = "Checks on Government Score", # Adding labels 
        title = "Venezuela's declining accountability",
        subtitle = "Data points are country-years",
        caption = "Source: Global State of Democracy Indices (2018)") 
@@ -231,7 +176,7 @@ ggplot(data = venezuela_df, aes(x = ID_year, y = value)) +
 ### Lets make the line a bit thicker
 
 ggplot(data = venezuela_df, aes(x = ID_year, y = value)) +
-  geom_line(size = 1) +
+  geom_line(size = 1) + # Changed line thickness 
   theme_minimal() + 
   scale_x_continuous(breaks = c(1990, 1995, 2000, 2005, 2010, 2015, 2018), limits = c(1990, 2018))+ 
   scale_y_continuous(breaks = scales::pretty_breaks(n = 10),limits=c(0, 1))+
@@ -241,54 +186,16 @@ ggplot(data = venezuela_df, aes(x = ID_year, y = value)) +
        caption = "Source: Global State of Democracy Indices (2018)") 
 
 ### What about confidence intervals? Can you guess how we would add those in? 
+### (do together)
 
 
+### Activity 2 
+### Make a chart comparing trends in Venezuela, Boliva and Ecuador from 1990 to 2018 
+
+### Make a barchart looking at the scores for just 2018! (challenging )
+### Hints use   geom_bar(stat = "identity")
+### Think about x and y axis...
 
 
-
-plot <- ggplot(filter(gsodi_long_ci, ID_country_name %in% lookup_df$ID_country_name|
-                              ID_country_code %in% c(lookup_df$ID_subregion + 970,lookup_df$ID_region+990, 999)) %>% 
-                       filter(ID_variable %in% variable_list[[j]]),
-                     aes(x=ID_year,
-                         y=value,
-                         group = ID_country_name_F,
-                         color = ID_country_name_F,
-                         ymin = lower_value_country, 
-                         ymax = upper_value_country))+
-        geom_line(size = 1)+ 
-        geom_ribbon(alpha =  .25, fill = "#111344" , colour=NA) +
-        scale_x_continuous("Year", breaks = c(1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2018), limits = c(1975, 2018))+ 
-        scale_y_continuous("Index score", breaks = scales::pretty_breaks(n = 10),limits=c(0, 1))+
-        theme_minimal()+ 
-        theme(text = element_text(size=30, family = "Meta OT"), 
-              legend.position="bottom", 
-              legend.key.width = unit(.25,  unit = "cm"),
-              legend.spacing.x = unit(0, unit = "cm"),
-              legend.box.margin=margin(-12,-12,-12,-12), 
-              plot.title = element_text(face="bold"),
-              axis.title.x=element_blank(),  
-              axis.title.y = element_text(margin=margin(0,5,0,0)),   
-              legend.title=element_blank(), 
-              axis.text.x = element_text(angle = 90, hjust = 1), 
-              axis.text.y = element_text(),
-              plot.caption=element_text(size=15, hjust=1),
-              panel.grid.major = element_line(size = .50),
-              panel.grid.minor = element_line(size = .25),
-              panel.grid = element_line(colour = "grey70")) +
-        scale_colour_manual(values = IDEA_colors) +
-        ggtitle(paste(names(variable_list[j])))+
-        guides(colour = guide_legend(nrow = 1, byrow =  TRUE)) +
-        labs(caption = caption)
-      {ggsave(filename= paste0(getwd(), "/countries/", lookup_df$ID_region_name, "/",
-                               lookup_df$ID_country_name,
-                               "/",
-                               str_replace_all(paste0(which(variable_list == variable_list[j]),
-                                                      "_",
-                                                      names(variable_list[j]),
-                                                      "_",
-                                                      lookup_df$ID_country_name,
-                                                      ".png"), fixed(" "), "_"))
-              , plot=plot, width = 10.685, height = 8, units = "cm", scale = 1, dpi = 300)}
-    }
 
 
